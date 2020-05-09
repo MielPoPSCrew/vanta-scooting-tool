@@ -1,4 +1,4 @@
-import { Measure, Concentration } from "./../models/GroupedData";
+import { MeasureGroup, Measure, Concentration } from "./../models/GroupedData";
 
 /*
   Expected headers:
@@ -161,18 +161,33 @@ function parseLine(line: string, csvStructure: CsvStructure): Measure {
   };
 }
 
-export function measuresFromCsv(csvContent: string): Measure[] | null {
+export function measuresFromCsv(csvContent: string): MeasureGroup[] | null {
   if (!csvContent) {
     throw new Error("No CSV content provided.");
   }
 
-  const csvLines = csvContent.split("\n");
+  const csvLines = csvContent.split("\n").filter(line => line);
   const csvStructure = computeCsvStructure(csvLines);
-  const measures: Measure[] = [];
 
-  for (let i = csvStructure.contentStartRowIndex; i < csvLines.length; i++) {
-    measures.push(parseLine(csvLines[i], csvStructure));
+  const groupPerMeasures = new Map<string, Measure[]>();
+  const getGroupOrDefault = (groupName: string) => {
+    let group = groupPerMeasures.get(groupName);
+
+    if (!group) {
+      group = [];
+      groupPerMeasures.set(groupName, group);
+    }
+
+    return group;
   }
 
-  return measures;
+  for (let i = csvStructure.contentStartRowIndex; i < csvLines.length; i++) {
+    const measure = parseLine(csvLines[i], csvStructure);
+    getGroupOrDefault(measure.group).push(measure);
+  }
+
+  const measureGroup: MeasureGroup[] = [];
+  groupPerMeasures.forEach((measures, name) => measureGroup.push({measures, name}));
+
+  return measureGroup;
 }

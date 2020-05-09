@@ -4,18 +4,18 @@ import { ReferencialType } from './Config';
 export default interface AggregatedData {
   projects: string[];
   operators: string[];
-  aggregatedgroups: AggregatedMeasureGoup[];
+  aggregatedgroups: AggregatedMeasureGroup[];
 }
 
-export interface AggregatedMeasureGoup {
+export interface AggregatedMeasureGroup {
   id: string;
   date: Date;
   measureCount: number;
-  concentrations: AggregatedConcentration;
+  concentrations: AggregatedConcentration[];
 }
 
 export interface AggregatedConcentration extends Concentration {
-  errorStandardDerivation: number;
+  errorStandardDeviation: number;
   closeToNextReferential: boolean;
-  associatedReferential: ReferencialType;
+  associatedReferential?: ReferencialType;
 }

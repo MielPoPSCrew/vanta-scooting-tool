@@ -1,7 +1,7 @@
 export default interface GroupedData {
   name: string;
   createdAt: Date;
-  measuresGroups: Measure[];
+  measuresGroups: MeasureGroup[];
 }
 
 export interface MeasureGroup {
